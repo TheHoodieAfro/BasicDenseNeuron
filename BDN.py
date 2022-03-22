@@ -8,6 +8,7 @@ class BDN():
     def __init__(self):
         
         self.w = rng.sample(range(-1, 1), (3,1))
+        self.b = 0
 
     """Activation function"""
     def __activationFunction(self, x, f):
@@ -28,25 +29,21 @@ class BDN():
     def __biasD(self, x):
         return x    #TODO add derivate function
 
-    def train(self, training_inputs, training_outputs, training_iterations):
+    def train(self, input, output, i):
         
-        #training the model to make accurate predictions while adjusting weights continually
-        for iteration in range(training_iterations):
-            #siphon the training data via  the neuron
-            output = self.think(training_inputs)
+        for j in range(i):
 
-            #computing error rate for back-propagation
-            error = training_outputs - output
+            currentOutput = self.think(input)
+
+            error = output - currentOutput
             
-            #performing weight adjustments
-            adjustments = np.dot(training_inputs.T, error * self.sigmoid_derivative(output))
+            newW = np.dot(input.T, error * self.__weightD(output))
 
-            self.synaptic_weights += adjustments
+            self.w += adjustments
 
-    def think(self, inputs):
-        #passing the inputs via the neuron to get output   
-        #converting values to floats
+    def predict(self, input):
         
-        inputs = inputs.astype(float)
-        output = self.sigmoid(np.dot(inputs, self.synaptic_weights))
+        input = input.astype(float)
+        z = np.dot(input, self.w) + self.b
+        output = self.__activationFunction(z, 'sigmoid')
         return output
