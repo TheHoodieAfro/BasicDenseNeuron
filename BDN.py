@@ -1,3 +1,6 @@
+import numpy as np
+import random as rng
+
 """Class based on the work showed in https://www.kdnuggets.com/2018/10/simple-neural-network-python.html"""
 class BDN():
     
@@ -19,13 +22,13 @@ class BDN():
         output = self.__activationFunction(z, 'sigmoid')
         return output, z
 
-    def minsq(self, y_predicted, y):
+    def __minsq(y_predicted, y):
       squared_error = (y_predicted - y) ** 2
       sum_squared_error = np.sum(squared_error)
       mse = sum_squared_error / y.size
-      return(mse)
+      return mse
     
-    def lossClassification(self, yp, y):
+    def __lossClassification(self, yp, y):
       loss = 0
 
       for i in range(len(y)):
@@ -34,18 +37,15 @@ class BDN():
       return (-loss)
 
     def costFunctionREG(self, yp, y):
-      sum = 0
-
-      for i in range(len(y)):
-        sum += minsq(yp[i], y[i])
+      return __minsq(yp, y)
 
     def costFunctionCLASS(self, yp, y):
-      return lossClassification(yp, y)*(1/len(y))
+      return __lossClassification(yp, y)*(1/len(y))
 
-    def dL(yp): #TODO sacar derivada de L reg(MSE) y de calss(lossClassification)
-      return 0
+    def __dL(yp, y): #TODO sacar derivada de L reg(MSE) y de calss(lossClassification)
+      return 2*yp-y*yp-yp*y
     
-    def dY(z):
+    def __dY(z):
       return z * (1 - z)
 
     def train(self, input, expected, i):
@@ -56,6 +56,6 @@ class BDN():
 
             prediction, z = self.predict(input)
 
-            self.w = dL(prediction) + dY(z) + input
+            self.w = __dL(prediction, expected) + __dY(z) + input
 
-            self.b = dL(prediction) + dY(z) + 1
+            self.b = __dL(prediction, expected) + __dY(z) + 1
