@@ -14,7 +14,7 @@ class BDN:
   """
   Constructor
   """
-  def __init__(self, type, activation = 'relu'):
+  def __init__(self, type, activation = 'relu', loss = 'mse'):
     # Initilize the weights and bias
 
     self.type = type
@@ -23,25 +23,38 @@ class BDN:
     self.activation_functions_reg = ['relu']
     self.activation_functions_class = []
 
-    self.loss_functions_reg = []
+    self.loss_functions_reg = ['mse']
     self.loss_functions_class = []
 
     if (self.type.lower() != 'regression'.lower() and self.type.lower() != 'classification'.lower()):
       raise Exception('The neuron must be either for regression or classification')
 
-    elif (self.type.lower() == 'regression'.lower() and self.activation.lower() not in self.functions_reg):
-      raise Exception(('For regression select between the functions in', self.functions_reg))
+    elif (self.type.lower() == 'regression'.lower() and self.activation.lower() not in self.activation_functions_reg and self.loss.lower() not in self.loss_functions_reg):
+      raise Exception(('For regression select between the activation functions in', self.activation_functions_reg, 'and loss functions in', self.loss_functions_reg))
 
-    elif (self.activation.lower() not in self.functions_class):
-      raise Exception(('For classification select between the functions in', self.functions_class))
+    elif (self.activation.lower() not in self.activation_functions_class and self.loss.lower() not in self.loss_functions_class):
+      raise Exception(('For classification select between the functions in', self.activation_functions_class, ' and loss function in', self.loss_functions_class))
 
   """
   Private methods
   """
-  def __activationFunction(self):
-    # Activation function to calculate the predicted output
+  def __relu(self, z):
+    # Relu function
 
-    # TODO: Add activation function
+    return max(0, z)
+
+  def __activation_function(self):
+    # Activation function to calculate the predicted output
+    
+    if (self.activation.lower() == 'relu'):  # TODO: Add activation functions
+      return __relu(self.z)
+
+    return None
+
+  def __loss_function(self):
+    # Loss function to calculate loss of precision in prediction
+
+    # TODO: Add loss functions
 
     return None
 
@@ -49,16 +62,18 @@ class BDN:
   Public methods
   """
   def predict(self, input):
+    # Prediction function based on the trainning
         
     input = input.astype(float)
 
     self.z = np.dot(input, self.w) + self.b
 
-    output = self.__activationFunction()
+    output = self.__activation_function()
 
     return output
-
+    
   def fit(self):
+    # Trainning function
 
     self.w = rng.sample(range(-1, 1), (len(input),1)) # TODO: Implement the train function
 
@@ -66,7 +81,7 @@ class BDN:
 
 
 
-  def __minsq(y_predicted, y):
+  """def __minsq(y_predicted, y):
       squared_error = (y_predicted - y) ** 2
       sum_squared_error = np.sum(squared_error)
       mse = sum_squared_error / y.size
@@ -102,4 +117,4 @@ class BDN:
 
             self.w = __dL(prediction, expected) + __dY(z) + input
 
-            self.b = __dL(prediction, expected) + __dY(z) + 1
+            self.b = __dL(prediction, expected) + __dY(z) + 1"""
