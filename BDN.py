@@ -21,7 +21,7 @@ class BDN:
     self.activation = activation
 
     self.activation_functions_reg = ['relu']
-    self.activation_functions_class = []
+    self.activation_functions_class = ['sigmoid']
 
     self.loss_functions_reg = ['mse']
     self.loss_functions_class = []
@@ -38,23 +38,21 @@ class BDN:
   """
   Private methods
   """
-  def __relu(self, z):
-    # Relu function
-
-    return max(0, z)
-
-  def __activation_function(self):
+  def activation_function(self):
     # Activation function to calculate the predicted output
     
-    if (self.activation.lower() == 'relu'):  # TODO: Add activation functions
-      return __relu(self.z)
+    if (self.activation.lower() == 'relu'):
+      return np.maximum(self.z, 0)
+
+    elif (self.activation.lower() == 'sigmoid'):
+      return 1 / (1 + np.exp(-self.z))
 
     return None
 
-  def __loss_function(self):
+  def loss_function(self):
     # Loss function to calculate loss of precision in prediction
 
-    # TODO: Add loss functions
+    print('lol') # TODO: Add loss functions
 
     return None
 
@@ -68,7 +66,7 @@ class BDN:
 
     self.z = np.dot(input, self.w) + self.b
 
-    output = self.__activation_function()
+    output = self.activation_function()
 
     return output
     
