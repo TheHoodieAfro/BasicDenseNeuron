@@ -19,6 +19,7 @@ class BDN:
 
     self.type = type
     self.activation = activation
+    self.loss = loss
 
     self.activation_functions_reg = ['relu']
     self.activation_functions_class = ['sigmoid']
@@ -49,12 +50,45 @@ class BDN:
 
     return None
 
-  def loss_function(self):
+  def loss_function(self, yp, y):
     # Loss function to calculate loss of precision in prediction
 
-    print('lol') # TODO: Add loss functions
+    if (self.loss.lower() == 'mse'):
+      se = (yp - y) ** 2
+      sse = np.sum(se)
+      mse = sse / y.size
+
+      return mse
+
+    elif (self.loss.lower() == 'bce'):
+      yp = np.clip(yp, 1e-7, 1 - 1e-7)
+      t1 = (1-y) * np.log(1-yp + 1e-7)
+      t2 = y * np.log(yp + 1e-7)
+      return -np.mean(t1+t2, axis=0)
 
     return None
+
+  def dY(self):
+    # Derivate of the activation function
+
+    if (self.activation.lower() == 'relu'):
+      return 0
+
+    elif (self.activation.lower() == 'sigmoid'):
+      return 0
+
+    return 0
+
+  def dL(self, yp, y):
+    # Derivate of the loss function
+
+    if (self.loss.lower() == 'mse'):
+      return 0
+
+    elif (self.loss.lower() == 'bce'):
+      return 0
+
+    return 0
 
   """
   Public methods
@@ -70,36 +104,26 @@ class BDN:
 
     return output
     
-  def fit(self):
+  def fit(self, input, output, i):
     # Trainning function
 
-    self.w = rng.sample(range(-1, 1), (len(input),1)) # TODO: Implement the train function
+    self.w = rng.sample(range(-1, 1), (len(input),1))
+
+    for j in range(i):
+
+            prediction = self.predict(input)
+
+            loss = self.loss_function(prediction, output)
+
+            self.w = self.dL(prediction, output) + self.dY(self.z) + input
+
+            self.b = self.dL(prediction, output) + self.dY(self.z) + 1
 
     return None
 
 
 
-  """def __minsq(y_predicted, y):
-      squared_error = (y_predicted - y) ** 2
-      sum_squared_error = np.sum(squared_error)
-      mse = sum_squared_error / y.size
-      return mse
-    
-  def __lossClassification(self, yp, y):
-      loss = 0
-
-      for i in range(len(y)):
-        loss += (y[i]*(np.log(yp[i])+((1-y[i])*np.log(1-yp[i]))))
-      
-      return (-loss)
-
-  def costFunctionREG(self, yp, y):
-      return __minsq(yp, y)
-
-  def costFunctionCLASS(self, yp, y):
-      return __lossClassification(yp, y)*(1/len(y))
-
-  def __dL(yp, y): #TODO sacar derivada de L reg(MSE) y de calss(lossClassification)
+  """def __dL(yp, y): #TODO sacar derivada de L reg(MSE) y de calss(lossClassification)
       return 2*yp-y*yp-yp*y
     
   def __dY(z):
